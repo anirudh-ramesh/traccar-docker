@@ -1,0 +1,56 @@
+version: "3.3"
+
+networks:
+
+    traccar:
+
+        external: false
+
+        driver: bridge
+
+volumes:
+
+    postgresql:
+
+services:
+
+    traccar:
+
+        restart: unless-stopped
+
+        networks:
+            - traccar
+
+        ports:
+            - "8082:8082"
+            - "5055:5055"
+            - "5179:5179"
+
+        container_name: traccar
+
+        # volumes:
+            # - /opt/traccar/conf/traccar.xml:/opt/traccar/conf/traccar.xml
+
+        # image: irasus/traccar:22.02
+
+        build: .
+
+        depends_on:
+            - postgresql
+
+    postgresql:
+
+        restart: unless-stopped
+
+        networks:
+            - traccar
+
+        container_name: postgresql
+
+        volumes:
+            - "postgresql:/var/lib/postgresql/data"
+
+        image: postgres:12
+
+        env_file:
+            - postgresql.env
